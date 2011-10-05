@@ -1,0 +1,78 @@
+;--------------------------------------------------------------------------------
+; Nome: Luiz Gustavo Frozi de Castro e Souza
+;--------------------------------------------------------------------------------
+; DESCRIÇÃO:
+; Solução vista em aula.
+; Programa que gera os primeiros termos da série de Fibonacci
+; A série é definida da seguinte forma: 0, 1, 1, 2, 3, 5, 8, 13, 21...
+; ou seja:
+;    F(0) = 0
+;    F(1) = 1
+;    F(n) = F(n - 1) + F(n - 2)
+;
+; * O número "n" de termos deverá estar nos endereços h80
+; * A série deverá ser colocada na área de memória indicada pelos endereços h81
+; * Devem ser gerados números de 8 bits sem sinal
+; * Usa o Modo Indireto
+;--------------------------------------------------------------------------------
+; Data: 04/10/2011
+;--------------------------------------------------------------------------------
+
+	ORG	0
+
+	LDR	X, nTerm
+	SUB	X, #2
+
+	LDR	B, EndDst
+	STR	B, Serie
+
+	LDR	A, #0
+	STR	A, Serie, I		; F(0) = 0
+	STR	A, Fn1
+
+	LDR	B, Serie
+	ADD	B, #1	
+	STR	B, Serie
+
+	LDR	A, #1
+	STR	A, Serie, I		; F(1) = 1
+	STR	A, Fn2
+
+	LDR	B, Serie
+	ADD	B, #1	
+	STR	B, Serie
+
+Loop:
+	LDR	A, Fn1
+	ADD	A, Fn2
+	STR	A, Serie, I		; F(n) = F(n - 1) + F(n - 2)
+	
+	LDR	A, Fn2
+	STR	A, Fn1
+	LDR	A, Serie, I
+	STR	A, Fn2
+
+	LDR	B, Serie
+	ADD	B, #1	
+	STR	B, Serie
+
+	SUB	X, #1
+	JZ	Fim
+	JMP	Loop
+
+Fim:
+	HLT
+
+;--------------------------------------------------------------------------------
+
+
+;--------------------------------------------------------------------------------
+; Area de Dados
+;--------------------------------------------------------------------------------
+	ORG	h80 			; DADOS
+nTerm:		DB    5			; Número de termos
+EndDst:		DB    h90		; Endereço inicial da série
+Serie:		DB    0                 ; Endereço atual do elemento da série
+Fn1:		DB    0			; F(n - 1)
+Fn2:		DB    0			; F(n - 2)
+;--------------------------------------------------------------------------------
